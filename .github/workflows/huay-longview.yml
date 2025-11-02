@@ -9,15 +9,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install deps
+
+      - name: Show env & files (debug)
+        run: |
+          node -v
+          npm -v
+          ls -la
+          cat package.json
+
+      - name: Install Playwright and browser deps
         run: |
           npm ci || npm i
           npx playwright install --with-deps chromium
-      - name: Run checker
+          npx playwright --version
+
+      - name: Run checker (verbose)
         env:
           LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
           LINE_TO: ${{ secrets.LINE_TO }}
-        run: node index.js
+          PWDEBUG: 0
+        run: |
+          node --trace-warnings index.js
